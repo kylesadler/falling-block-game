@@ -1,10 +1,3 @@
-//---------------------------------------
-// Program: square.cpp
-// Purpose: Demonstrate basic OpenGL commands
-//          to display two squares.
-// Author:  John Gauch
-// Date:    September 2008
-//---------------------------------------
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
