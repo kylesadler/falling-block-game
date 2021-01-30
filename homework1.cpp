@@ -41,7 +41,7 @@ double getRandomPosition() {
     return (rand() % n) / (double)n * (1-BLOCK_SIZE*4); // make room for tetris peice
 }
 
-void drawQuad(float minX, float minY, float maxX, float maxY, float red, float green, float blue) {
+void drawRect(float minX, float minY, float maxX, float maxY, float red, float green, float blue) {
     /* draws a quadrilateral at the given location with given RGB color
     */
 
@@ -66,7 +66,7 @@ void drawBlock(float x, float y, float color[]) {
     float xMax = x + BLOCK_SIZE;
     float yMax = y + BLOCK_SIZE;
 
-    drawQuad(x, y, xMax, yMax, red, green, blue);
+    drawRect(x, y, xMax, yMax, red, green, blue);
 
     // draws outline counter clockwise starting with bottom
     float medRed = red / 1.5;
@@ -81,19 +81,19 @@ void drawBlock(float x, float y, float color[]) {
     float lightGreen = (green + 1)/2;
     float lightBlue = (blue + 1)/2;
 
-    drawQuad(
+    drawRect(
         x + OUTLINE_WIDTH, y, xMax - OUTLINE_WIDTH, y + OUTLINE_WIDTH,
         darkRed, darkGreen, darkBlue
         );
-    drawQuad(
+    drawRect(
         xMax - OUTLINE_WIDTH, y + OUTLINE_WIDTH, xMax, yMax - OUTLINE_WIDTH,
         medRed, medGreen, medBlue
         );
-    drawQuad(
+    drawRect(
         x + OUTLINE_WIDTH, yMax - OUTLINE_WIDTH, xMax - OUTLINE_WIDTH, yMax,
         lightRed, lightGreen, lightBlue
         );
-    drawQuad(
+    drawRect(
         x, y + OUTLINE_WIDTH, x  + OUTLINE_WIDTH, yMax - OUTLINE_WIDTH,
         medRed, medGreen, medBlue
         );
