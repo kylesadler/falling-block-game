@@ -8,12 +8,12 @@ endif
 # define makefile targets
 CC = g++ -std=c++11 -Wall -Wno-deprecated-declarations -O3
 
-all: $(LIB2) $(BIN)
+homework2: homework2.cpp
+	$(CC) -o $@ homework2.cpp $(LIB)
 
+
+homework1: homework1.cpp
+	$(CC) -o $@ homework1.cpp $(LIB)
 
 clean: 
-	/bin/rm -f homework
-
-homework: homework1.cpp
-	$(CC) -o homework homework1.cpp $(LIB)
-
+	/bin/rm -f homework1 homework2
