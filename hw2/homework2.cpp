@@ -21,7 +21,7 @@ using namespace std;
 float GRID_WIDTH = 10;
 float GRID_HEIGHT = 20;
 float SCREEN_PADDING = 1;
-float BORDER_COLOR[] = {200.0/255, 200.0/255, 200.0/255};
+float BORDER_COLOR[] = {100.0/255, 100.0/255, 100.0/255};
 float GRID_COLOR[] = {200.0/255, 200.0/255, 200.0/255};
 
 struct Piece {
@@ -93,32 +93,33 @@ void movePiece(char direction) {
    }
 
    switch (direction) {
-   case 'l':
-      if (p.x > 0) {
-         PIECES[index] = {p.type, p.x - 1, p.y, p.rotation, p.frozen};
-      }
-      break;
-   
-   case 'r':
-      if (p.x < GRID_WIDTH - getWidth(p.type)) {
-         PIECES[index] = {p.type, p.x + 1, p.y, p.rotation, p.frozen};
-      }
-      break;
-   
-   
-   case 'd':
-      if (p.y > 0) {
-         PIECES[index] = {p.type, p.x, p.y - 1, p.rotation, p.frozen};
-      }
-      break;
-   
-   default:
-      break;
+      case 'l':
+         if (p.x > 0) {
+            p.x -= 1;
+         }
+         break;
+      
+      case 'r':
+         if (p.x < GRID_WIDTH - getWidth(p.type, p.rotation)) {
+            p.x += 1;
+         }
+         break;
+      
+      
+      case 'd':
+         if (p.y > 0) {
+            p.y -= 1;
+         }
+         break;
+      
+      default:
+         break;
    }
+   PIECES[index] = p;
 }
 
 double getRandomPosition() {
-    // generate a random position between 0 and 1
+    // generate a random starting x position for Tetris piece
     return rand() % (int) (GRID_WIDTH - 4); // make room for tetris peice
 }
 
@@ -144,11 +145,11 @@ void drawBorder() {
 void drawGrid() {
    glBegin(GL_LINES);
    glColor3f(GRID_COLOR[0], GRID_COLOR[1], GRID_COLOR[2]);
-   for (int y = 0; y < GRID_HEIGHT; y++) {
+   for (int y = 0; y <= GRID_HEIGHT; y++) {
       glVertex2f(-SCREEN_PADDING, y); 
       glVertex2f(GRID_WIDTH+SCREEN_PADDING, y); 
    }
-   for (int x = 0; x < GRID_WIDTH; x++) {
+   for (int x = 0; x <= GRID_WIDTH; x++) {
       glVertex2f(x, -SCREEN_PADDING); 
       glVertex2f(x, GRID_HEIGHT+SCREEN_PADDING); 
    }
@@ -182,9 +183,6 @@ void display() {
 //---------------------------------------
 void keyboard(unsigned char key, int x, int y)
 {
-   cout << "keyboard " << key << endl;
-
-
    switch (key) {
       case 'i':
       case 'I':
@@ -210,7 +208,6 @@ void keyboard(unsigned char key, int x, int y)
          break;
 
       case ' ':
-         cout << "freeze" << endl;
          freezePiece();
          break;
       
@@ -229,19 +226,15 @@ void special(int key, int x, int y)
 {
    switch(key) {
    case GLUT_KEY_UP:
-      cout << "special up\n";
       rotatePiece();
       break;
    case GLUT_KEY_DOWN:
-      cout << "special down\n";
       movePiece('d');
       break;
    case GLUT_KEY_LEFT:
-      cout << "special left\n";
       movePiece('l');
       break;
    case GLUT_KEY_RIGHT:
-      cout << "special right\n";
       movePiece('r');
       break;
    default:

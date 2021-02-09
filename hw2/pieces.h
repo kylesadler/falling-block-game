@@ -1,3 +1,3 @@
 void drawPiece(char type, float x, float y, int rotation);
 
-int getWidth(char piece);
+int getWidth(char piece, int rotation);

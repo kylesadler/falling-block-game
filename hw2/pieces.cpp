@@ -10,6 +10,7 @@
 #endif
 #include <vector>
 #include <iostream>
+#include <functional>
 using namespace std;
 
 float BLOCK_SIZE = 1;
@@ -199,28 +200,48 @@ void drawPiece(char type, float x, float y, int rotation) {
     /* draws a Tetris peice of specified type at x,y.
         x,y is the bottom left of the shape
         type is one of {i, j, l, o, s, t, z}
+        rotation is a positive integer mod 4 indicating the number of
+            counter-clockwise rotations from neutral
     */
+
+    float rotateX, rotateY; // position to rotate around
+    function<void (int, int)> draw;
+
     switch(type) {
         case 'i':
-            drawI(x, y);
+            draw = drawI;
+            rotateX = x + 1.5;
+            rotateY = y + 0.5;
             break;
         case 'j':
-            drawJ(x, y);
+            draw = drawJ;
+            rotateX = x + 0.5;
+            rotateY = y + 0.5;
             break;
         case 'l':
-            drawL(x, y);
+            draw = drawL;
+            rotateX = x + 1.5;
+            rotateY = y + 0.5;
             break;
         case 'o':
-            drawO(x, y);
+            draw = drawO;
+            rotateX = x + 1;
+            rotateY = y + 1;
             break;
         case 's':
-            drawS(x, y);
+            draw = drawS;
+            rotateX = x + 1.5;
+            rotateY = y + 0.5;
             break;
         case 't':
-            drawT(x, y);
+            draw = drawT;
+            rotateX = x + 1.5;
+            rotateY = y + 0.5;
             break;
         case 'z':
-            drawZ(x, y);
+            draw = drawZ;
+            rotateX = x + 1.5;
+            rotateY = y + 0.5;
             break;
         
         default:
@@ -228,10 +249,17 @@ void drawPiece(char type, float x, float y, int rotation) {
             throw "Invalid piece";
     };
 
+    glPushMatrix();
+    glTranslatef(rotateX, rotateY, 0.0);
+    glRotatef(90.0*rotation, 0, 0, 1);
+    glTranslatef(-rotateX, -rotateY, 0.0);
+    draw(x, y);
+    glPopMatrix();
+
 }
 
 
-int getWidth(char piece) {
+int getWidth(char piece, int rotation) {
    /* returns width of piece */
    switch (piece) {
       case 'i':
