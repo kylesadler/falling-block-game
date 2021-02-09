@@ -83,7 +83,7 @@ void movePiece(char direction) {
       return;
    }
 
-   printf("moving %c\n", direction);
+   // printf("moving %c\n", direction);
 
    int index = NUM_PIECES-1;
    Piece p = PIECES[index];
@@ -163,11 +163,11 @@ void display() {
    drawGrid();
 
    if (NUM_PIECES > 0) {
-      printf("about to draw %d pieces!\n", NUM_PIECES);
+      // printf("about to draw %d pieces!\n", NUM_PIECES);
 
       for (int i = 0; i < NUM_PIECES; i++) {
          Piece p = PIECES[i];
-         printf("%d %d\n", p.x, p.y);
+         // printf("%d %d\n", p.x, p.y);
          drawPiece(p.type, p.x, p.y, p.rotation);
       }
    }
