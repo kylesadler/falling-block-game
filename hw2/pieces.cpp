@@ -1,5 +1,5 @@
 
-
+#include "util.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,12 +12,9 @@
 #include <iostream>
 using namespace std;
 
-
-//---------------------------------------
-// Display constants
-//---------------------------------------
-float BLOCK_SIZE = 0.05;
+float BLOCK_SIZE = 1;
 float OUTLINE_WIDTH = BLOCK_SIZE / 7;
+
 float I_COLOR[] = {42.0/255,  239.0/255, 239.0/255}; // 2AEFEF
 float J_COLOR[] = {8.0/255,   33.0/255,  237.0/255}; // 0821ED
 float L_COLOR[] = {238.0/255, 160.0/255, 38.0/255};  // EEA026
@@ -25,39 +22,6 @@ float O_COLOR[] = {239.0/255, 238.0/255, 52.0/255};  // EFEE34
 float S_COLOR[] = {39.0/255,  238.0/255, 43.0/255};  // 27EE2B
 float T_COLOR[] = {159.0/255, 35.0/255,  237.0/255}; // 9F23ED
 float Z_COLOR[] = {237.0/255, 11.0/255,  25.0/255};  // ED0B19
-
-
-//---------------------------------------
-// Init function for OpenGL
-//---------------------------------------
-void init()
-{
-   glClearColor(0.0, 0.0, 0.0, 1.0);
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
-}
-
-
-double getRandomPosition() {
-    // generate a random position between 0 and 1
-    int n = 1000000;
-    return (rand() % n) / (double)n * (1-BLOCK_SIZE*4); // make room for tetris peice
-}
-
-void drawRect(float minX, float minY, float maxX, float maxY, float red, float green, float blue) {
-    /* draws a quadrilateral at the given location with given RGB color
-    */
-
-    glBegin(GL_POLYGON);
-    glColor3f(red, green, blue);
-    glVertex2f(minX, minY);
-    glVertex2f(minX, maxY);
-    glVertex2f(maxX, maxY);
-    glVertex2f(maxX, minY);
-    glEnd();
-
-}
 
 void drawBlock(float x, float y, float color[]) {
     /* draws a tetris block at the given x,y location with given RGB color
@@ -149,7 +113,6 @@ void drawBlock(float x, float y, float color[]) {
     glEnd();
 }
 
-
 /* 
     Tetris piece drawing functions
 */
@@ -231,79 +194,63 @@ void drawZ(float x, float y) {
 
 }
 
-//---------------------------------------
-// Display callback for OpenGL
-//---------------------------------------
-void display()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
 
-    drawZ(getRandomPosition(), getRandomPosition());
-    drawI(getRandomPosition(), getRandomPosition());
-    drawJ(getRandomPosition(), getRandomPosition());
-    drawL(getRandomPosition(), getRandomPosition());
-    drawO(getRandomPosition(), getRandomPosition());
-    drawS(getRandomPosition(), getRandomPosition());
-    drawT(getRandomPosition(), getRandomPosition());
+void drawPiece(char type, float x, float y, int rotation) {
+    /* draws a Tetris peice of specified type at x,y.
+        x,y is the bottom left of the shape
+        type is one of {i, j, l, o, s, t, z}
+    */
+    switch(type) {
+        case 'i':
+            drawI(x, y);
+            break;
+        case 'j':
+            drawJ(x, y);
+            break;
+        case 'l':
+            drawL(x, y);
+            break;
+        case 'o':
+            drawO(x, y);
+            break;
+        case 's':
+            drawS(x, y);
+            break;
+        case 't':
+            drawT(x, y);
+            break;
+        case 'z':
+            drawZ(x, y);
+            break;
+        
+        default:
+            printf("invalid piece \"%c\"\n", type);
+            throw "Invalid piece";
+    };
 
-    glFlush();
 }
 
 
-//---------------------------------------
-// Keyboard callback for OpenGL
-//---------------------------------------
-void keyboard(unsigned char key, int x, int y)
-{
-   cout << "keyboard " << key << endl;
-
-   // Redraw objects
-   glutPostRedisplay();
-}
-
-//---------------------------------------
-// Special callback for OpenGL
-//---------------------------------------
-void special(int key, int x, int y)
-{
-   switch(key)
-   {
-   case GLUT_KEY_UP:
-      cout << "special up\n";
-      break;
-   case GLUT_KEY_DOWN:
-      cout << "special down\n";
-      break;
-   case GLUT_KEY_LEFT:
-      cout << "special left\n";
-      break;
-   case GLUT_KEY_RIGHT:
-      cout << "special right\n";
-      break;
-   default:
-      cout << "special " << key << endl;
+int getWidth(char piece) {
+   /* returns width of piece */
+   switch (piece) {
+      case 'i':
+         return 4;
+         break;
+         
+      case 'o':
+         return 2;
+         break;
+   
+      case 'j':
+      case 'l':
+      case 's':
+      case 't':
+      case 'z':
+         return 3;
+         break;
+   
+      default:
+         throw "invalid piece";
    }
-
-   // Redraw objects
-   glutPostRedisplay();
-}
-
-
-
-// ---------------------------------------
-// Main program
-// ---------------------------------------
-int main(int argc, char *argv[])
-{
-    glutInit(&argc, argv);
-    glutInitWindowSize(1500, 1500);
-    glutInitWindowPosition(250, 250);
-    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
-    glutCreateWindow("Tetris");
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(special);
-    init();
-    glutMainLoop();
-    return 0;
 }
