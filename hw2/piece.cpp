@@ -1,5 +1,6 @@
 
 #include "util.h"
+#include "piece.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -213,20 +214,22 @@ void drawPiece(char type, float x, float y, int rotation) {
             rotateX = x + 1.5;
             rotateY = y + 0.5;
             break;
+
+        case 'o':
+            draw = drawO;
+            rotateX = x + 1;
+            rotateY = y + 1;
+            break;
+        
         case 'j':
             draw = drawJ;
-            rotateX = x + 0.5;
+            rotateX = x + 1.5;
             rotateY = y + 0.5;
             break;
         case 'l':
             draw = drawL;
             rotateX = x + 1.5;
             rotateY = y + 0.5;
-            break;
-        case 'o':
-            draw = drawO;
-            rotateX = x + 1;
-            rotateY = y + 1;
             break;
         case 's':
             draw = drawS;
@@ -251,34 +254,132 @@ void drawPiece(char type, float x, float y, int rotation) {
 
     glPushMatrix();
     glTranslatef(rotateX, rotateY, 0.0);
-    glRotatef(90.0*rotation, 0, 0, 1);
+    glRotatef(-90.0*rotation, 0, 0, 1);
     glTranslatef(-rotateX, -rotateY, 0.0);
     draw(x, y);
     glPopMatrix();
 
 }
 
-
-int getWidth(char piece, int rotation) {
-   /* returns width of piece */
+// TODO make these into objects
+void getDimensions(char piece, int rotation, int dims[]) {
+   /* returns width, hieght of piece */
    switch (piece) {
       case 'i':
-         return 4;
-         break;
+        dims[0] = 4;
+        dims[1] = 1;
+        break;
          
       case 'o':
-         return 2;
-         break;
+        dims[0] = 2;
+        dims[1] = 2;
+        break;
    
       case 'j':
       case 'l':
       case 's':
       case 't':
       case 'z':
-         return 3;
-         break;
+        dims[0] = 3;
+        dims[1] = 2;
+        break;
    
       default:
          throw "invalid piece";
    }
+}
+
+bool withinBounds(Piece p, int grid_width, int grid_height) {
+    int minX, minY, maxX, maxY;
+
+    switch (p.type) {
+        case 'i':
+            switch (p.rotation) {
+                case 0:
+                    minX = p.x;
+                    minY = p.y;
+                    maxX = p.x + 4;
+                    maxY = p.y + 1;
+                    break;
+                
+                case 1:
+                    minX = p.x + 1;
+                    minY = p.y - 1;
+                    maxX = p.x + 2;
+                    maxY = p.y + 2;
+                    break;
+                
+                case 2:
+                    minX = p.x - 1;
+                    minY = p.y;
+                    maxX = p.x + 3;
+                    maxY = p.y + 1;
+                    break;
+                
+                case 3:
+                    minX = p.x + 1;
+                    minY = p.y - 2;
+                    maxX = p.x + 2;
+                    maxY = p.y + 1;
+                    break;
+                
+                default:
+                    throw "invalid rotation";
+            }
+            break;
+            
+        case 'o':
+            minX = p.x;
+            minY = p.y;
+            maxX = p.x + 2;
+            maxY = p.y + 2;
+            break;
+
+        case 'j':
+        case 'l':
+        case 's':
+        case 't':
+        case 'z':
+            switch (p.rotation) {
+                case 0:
+                    minX = p.x;
+                    minY = p.y;
+                    maxX = p.x + 3;
+                    maxY = p.y + 2;
+                    break;
+                
+                case 1:
+                    minX = p.x + 1;
+                    minY = p.y - 1;
+                    maxX = p.x + 3;
+                    maxY = p.y + 2;
+                    break;
+                
+                case 2:
+                    minX = p.x;
+                    minY = p.y - 1;
+                    maxX = p.x + 3;
+                    maxY = p.y + 1;
+                    break;
+                
+                case 3:
+                    minX = p.x;
+                    minY = p.y - 1;
+                    maxX = p.x + 2;
+                    maxY = p.y + 2;
+                    break;
+                
+                default:
+                    throw "invalid rotation";
+
+            }
+            break;
+
+        default:
+            throw "invalid piece";
+    }
+
+    return minX >= 0 && minY >= 0 && maxX <= grid_width && maxY <= grid_height;
+
+    // return true;
 }

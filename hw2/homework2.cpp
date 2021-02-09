@@ -1,6 +1,6 @@
 
 #include "util.h"
-#include "pieces.h" // PIECES are 1 unit wide
+#include "piece.h" // PIECES are 1 unit wide
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,17 +24,9 @@ float SCREEN_PADDING = 1;
 float BORDER_COLOR[] = {100.0/255, 100.0/255, 100.0/255};
 float GRID_COLOR[] = {200.0/255, 200.0/255, 200.0/255};
 
-struct Piece {
-   char type;
-   int x;
-   int y;
-   int rotation; // 0 to 3
-   bool frozen;
-};
-
 const int PIECE_LIMIT = (int) (GRID_WIDTH*GRID_HEIGHT/4) + 1;
 int NUM_PIECES = 0;
-Piece PIECES[50];
+Piece PIECES[50]; // arrange these in a grid-like datastructure to make collision detection easier
 
 //---------------------------------------
 // Init function for OpenGL
@@ -60,16 +52,24 @@ void addPiece(char type, int x, int y) {
 
 void rotatePiece() {
    /* rotates current piece 90 degrees counter clockwise  */
+   if (NUM_PIECES == 0) {
+      return;
+   }
    Piece p = PIECES[NUM_PIECES-1];
    if (p.frozen) {
       return;
    }
    p.rotation = (p.rotation + 1) % 4;
-   PIECES[NUM_PIECES-1] = p;
+   if (withinBounds(p, GRID_WIDTH, GRID_HEIGHT)){
+      PIECES[NUM_PIECES-1] = p;
+   }
 }
 
 void freezePiece() {
    /* freezes current piece */
+   if (NUM_PIECES == 0) {
+      return;
+   }
    Piece p = PIECES[NUM_PIECES-1];
    p.frozen = true;
    PIECES[NUM_PIECES-1] = p;
@@ -94,28 +94,25 @@ void movePiece(char direction) {
 
    switch (direction) {
       case 'l':
-         if (p.x > 0) {
-            p.x -= 1;
-         }
+         p.x -= 1;
          break;
       
       case 'r':
-         if (p.x < GRID_WIDTH - getWidth(p.type, p.rotation)) {
-            p.x += 1;
-         }
+         p.x += 1;
          break;
       
-      
       case 'd':
-         if (p.y > 0) {
-            p.y -= 1;
-         }
+         p.y -= 1;
          break;
       
       default:
          break;
    }
-   PIECES[index] = p;
+   
+   if (withinBounds(p, GRID_WIDTH, GRID_HEIGHT)){
+      PIECES[index] = p;
+   }
+
 }
 
 double getRandomPosition() {
